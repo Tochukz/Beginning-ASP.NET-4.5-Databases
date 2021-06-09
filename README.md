@@ -43,4 +43,21 @@ __DataSet vs. DataReader__
 _Data Reader_ is faster than _DataSet_ for accessing data in a forward-only, read-only fashion.  _DataSet_, is a powerful means of holding data in memory and performing manipulations on it. Also god for multiple heterogeneous data sources.
 
 __Connecting to a Database__   
-**Caution** Integrated authentication is the preferred means of connecting to a database. If you have to use the database credentials, then make sure that the . _Persist Security Info_ attribute is set to `false`. In addition, encrypt the sensitive credential information in the configuration file. You can use the _ASPNET_REGIIS_ command with the `-pe` switch in the Visual Studio Tools Command Prompt to encrypt specific configuration sections.
+**Caution** Integrated authentication is the preferred means of connecting to a database. If you have to use the database credentials, then make sure that the . _Persist Security Info_ attribute is set to `false`. In addition, encrypt the sensitive credential information in the configuration file. You can use the _ASPNET_REGIIS_ command with the `-pe` switch in the Visual Studio Tools Command Prompt to encrypt specific configuration sections.  
+
+**Caution** Inline queries are always susceptible to injection attacks, so avoid using them in your code.
+
+__Store Procedure Syntax__
+```
+USE database_name
+GO
+
+CREATE PROCEDURE stored_procedure_name
+  @param1 varchar(10),
+  @param2 int  
+AS
+BEGIN
+  SELECT field1, field2, field3, field4 from table_name WHERE field1=@param1 AND field4=@param2
+END
+```
+For stored procedure without parameter, the _param_ lines may be omitted.   

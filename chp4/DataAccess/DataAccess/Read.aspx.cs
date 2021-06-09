@@ -21,9 +21,40 @@ namespace DataAccess
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
-                    SqlCommand command = new SqlCommand("select id, name, gender, city, salary from tblEmployee", connection);
-                    command.CommandType = CommandType.Text;
+
+                    /* using inline query */
+                    //SqlCommand command = new SqlCommand("select id, name, gender, city, salary from tblEmployee", connection);
+                    //command.CommandType = CommandType.Text;
+
+                    /* using store procedure*/
+                    //SqlCommand command = new SqlCommand("select_employees", connection);
+                    //command.CommandType = CommandType.StoredProcedure;
+                    
+                    /* using store procedure with parameter */
+                    SqlCommand command = new SqlCommand("select_employee_by_name_and_salary", connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    SqlParameter name = new SqlParameter
+                    {
+                        ParameterName = "@name",
+                        SqlDbType = SqlDbType.VarChar,
+                        Direction = ParameterDirection.Input,
+                        Value = "Sam"
+                    };
+                    SqlParameter salary = new SqlParameter
+                    {
+                        ParameterName = "@salary",
+                        SqlDbType = SqlDbType.Int,
+                        Direction = ParameterDirection.Input,
+                        Value = 4500
+                    };
+                    command.Parameters.Add(name);
+                    command.Parameters.Add(salary);
+
+
                     SqlDataReader reader = command.ExecuteReader();
+                    
+                    //int output = command.ExecuteNonQuery(); // retuns the nuber of row affected.
+
                     DisplayResults(reader);
                 }
             }
@@ -35,12 +66,19 @@ namespace DataAccess
 
         private void DisplayResults(SqlDataReader reader)
         {
-            while(reader.Read())
+            if (reader.HasRows)
             {
-        
-                HtmlTableRow row = CreateRow(reader.GetValue(0).ToString(), reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetValue(4).ToString());                
-                employeeTable.Controls.Add(row);
+                while (reader.Read())
+                {
+
+                    HtmlTableRow row = CreateRow(reader.GetValue(0).ToString(), reader.GetString(1), reader.GetString(2), reader.GetString(3), reader.GetValue(4).ToString());
+                    employeeTable.Controls.Add(row);
+                }
+            } else
+            {
+                reader.Close();
             }
+            
         }
 
         private HtmlTableRow CreateRow(params string[] fields)
